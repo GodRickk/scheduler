@@ -1,0 +1,42 @@
+playground.py
+playground/
+
+**/*.pyc
+__pycache__/
+.DS_Store
+.env
+.venv
+
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+
