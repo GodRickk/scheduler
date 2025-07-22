@@ -1,10 +1,11 @@
 import requests
+from src.utils.validation import validate_date_in_schedule
 
 
 class Scheduler:
     __url: str = ""
     __data: dict[list[dict[int, str, str, str]], list[dict[int, int, str, str]]] = {}
-    __days: dict[str, dict[int, str, str, str]] = {}
+    __days: dict[str, list[dict[int, str, str, str]]] = {}
     __timeslots_by_day = {}
 
     def __init__(self, url: str):
@@ -17,14 +18,15 @@ class Scheduler:
         self.__timeslots_by_day = self._organize_timeslots()
 
     def get_busy_slots(self, date: str) -> list[tuple[str, str]]:
+        validate_date_in_schedule(date, self.__days)
+
         if date not in self.__timeslots_by_day:
             return []
 
         return [(slot["start"], slot["end"]) for slot in self.__timeslots_by_day[date]]
 
     def get_free_slots(self, date: str) -> list[tuple[str, str]]:
-        if date not in self.__days:
-            return []
+        validate_date_in_schedule(date, self.__days)
 
         day = self.__days[date]
         work_start = self._time_to_minutes(day["start"])
@@ -59,8 +61,7 @@ class Scheduler:
         return free_slots
 
     def is_available(self, date: str, start_time: str, end_time: str) -> bool:
-        if date not in self.__days:
-            raise ValueError("date wasn't found in schedule")
+        validate_date_in_schedule(date, self.__days)
 
         day = self.__days[date]
         work_start = self._time_to_minutes(day["start"])
