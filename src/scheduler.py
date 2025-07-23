@@ -3,32 +3,31 @@ from src.utils.validation import validate_date_in_schedule
 
 
 class Scheduler:
-    __url: str = ""
-    __data: dict[list[dict[int, str, str, str]], list[dict[int, int, str, str]]] = {}
-    __days: dict[str, list[dict[int, str, str, str]]] = {}
-    __timeslots_by_day = {}
-
     def __init__(self, url: str):
-        self.__url = url
-        self.__data = self._load_data()
+        self._url: str = url
+        self._data: dict[
+            list[dict[int, str, str, str]], list[dict[int, int, str, str]]
+        ] = self._load_data()
 
-        for day in self.__data["days"]:
-            self.__days[day["date"]] = day
+        self._days: dict[str, list[dict[int, str, str, str]]] = {}
 
-        self.__timeslots_by_day = self._organize_timeslots()
+        for day in self._data["days"]:
+            self._days[day["date"]] = day
+
+        self._timeslots_by_day = self._organize_timeslots()
 
     def get_busy_slots(self, date: str) -> list[tuple[str, str]]:
-        validate_date_in_schedule(date, self.__days)
+        validate_date_in_schedule(date, self._days)
 
-        if date not in self.__timeslots_by_day:
+        if date not in self._timeslots_by_day:
             return []
 
-        return [(slot["start"], slot["end"]) for slot in self.__timeslots_by_day[date]]
+        return [(slot["start"], slot["end"]) for slot in self._timeslots_by_day[date]]
 
     def get_free_slots(self, date: str) -> list[tuple[str, str]]:
-        validate_date_in_schedule(date, self.__days)
+        validate_date_in_schedule(date, self._days)
 
-        day = self.__days[date]
+        day = self._days[date]
         work_start = self._time_to_minutes(day["start"])
         work_end = self._time_to_minutes(day["end"])
 
@@ -61,9 +60,9 @@ class Scheduler:
         return free_slots
 
     def is_available(self, date: str, start_time: str, end_time: str) -> bool:
-        validate_date_in_schedule(date, self.__days)
+        validate_date_in_schedule(date, self._days)
 
-        day = self.__days[date]
+        day = self._days[date]
         work_start = self._time_to_minutes(day["start"])
         work_end = self._time_to_minutes(day["end"])
 
@@ -83,22 +82,39 @@ class Scheduler:
 
         return True
 
+    def find_slot_for_duration(self, duration_minutes: int):
+        sorted_dates = sorted(self._days.keys())
+
+        for date in sorted_dates:
+            free_slots = self.get_free_slots(date)
+
+            for free_start, free_end in free_slots:
+                start_minutes = self._time_to_minutes(free_start)
+                end_minutes = self._time_to_minutes(free_end)
+
+                if end_minutes - start_minutes >= duration_minutes:
+                    found_start = self._minutes_to_time(start_minutes)
+                    found_end = self._minutes_to_time(start_minutes + duration_minutes)
+                    return (date, found_start, found_end)
+
+        return ()
+
     def _load_data(self):
         try:
-            response = requests.get(self.__url)
+            response = requests.get(self._url)
             response.raise_for_status()
             return response.json()
 
         except requests.RequestException as e:
-            raise Exception(f"Ошибка при загрузке данных: {e}")
+            raise Exception(f"Error loading data: {e}")
 
     def _organize_timeslots(self):
         timeslots_by_day = {}
 
-        for timeslot in self.__data["timeslots"]:
+        for timeslot in self._data["timeslots"]:
             day_id = timeslot["day_id"]
 
-            for day in self.__data["days"]:
+            for day in self._data["days"]:
                 if day_id == day["id"]:
                     date = day["date"]
 
@@ -123,16 +139,13 @@ class Scheduler:
         return f"{hours:02d}:{mins:02d}"
 
     def get_data(self):
-        return self.__data
+        return self._data
 
     def get_days(self):
-        return self.__days
+        return self._days
 
     def get_timeslots_by_day(self):
-        return self.__timeslots_by_day
+        return self._timeslots_by_day
 
     def get_url(self) -> str:
-        return self.__url
-
-    def set_url(self, new_url: str):
-        self.__url = new_url
+        return self._url

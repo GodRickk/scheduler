@@ -1,5 +1,4 @@
 import pytest
-from tests.conftest import scheduler
 
 from tests.constants import (
     two_slots_2024_10_10,
