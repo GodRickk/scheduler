@@ -21,22 +21,31 @@ days = [
 ]
 
 
-timesolt_day_1 = [("17:30", "20:00"), ("11:00", "12:00")]
+timeslot_day_1 = [("11:00", "12:00"), ("17:30", "20:00")]
+timeslot_free_time_day_1 = ("09:00", "11:00")
+
+timeslot_day_2 = ("09:30", "16:00")
+
 
 timeslots = [
     {
         "id": 2,
         "day_id": days[0]["id"],
-        "start": timesolt_day_1[0][0],
-        "end": timesolt_day_1[0][1],
+        "start": timeslot_day_1[0][0],
+        "end": timeslot_day_1[0][1],
     },
     {
         "id": 1,
         "day_id": days[0]["id"],
-        "start": timesolt_day_1[1][0],
-        "end": timesolt_day_1[1][1],
+        "start": timeslot_day_1[1][0],
+        "end": timeslot_day_1[1][1],
     },
-    {"id": 3, "day_id": days[1]["id"], "start": "09:30", "end": "16:00"},
+    {
+        "id": 3,
+        "day_id": days[1]["id"],
+        "start": timeslot_day_2[0],
+        "end": timeslot_day_2[1],
+    },
 ]
 
 
