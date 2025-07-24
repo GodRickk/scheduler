@@ -1,10 +1,11 @@
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
 test_mock_url = "https://test/"
 
-test_real_api_url = "${API_URL}"
+test_real_api_url = os.getenv("API_URL")
 
 
 two_slots_2024_10_10 = "2024-10-10"
