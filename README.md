@@ -52,7 +52,13 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 5. Запуск тестов
+### 5. Определение переменных окружения в .env
+
+```bash
+API_URL=
+```
+
+### 6. Запуск тестов
 
 ```bash
 pytest
